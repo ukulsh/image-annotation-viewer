@@ -26,14 +26,16 @@
     });
     return json;
 })();
-	console.log(json);
-	console.log("2++++++++++++");
+	// console.log(json);
+	// console.log("2++++++++++++");
 	window.onload = function() {
-
 		// Get a reference to the canvas object
+		var path,rectangle,text = 0;
 		var canvas = document.getElementById('myCanvas');
 		// Create an empty project and a view for the canvas:
+		
 		paper.setup('myCanvas');
+		
 		var raster = new paper.Raster({
 		source: json.images[0].flickr_url,
 		});
@@ -41,9 +43,9 @@
     	// this.bounds.width = paper.view.bounds.width;
     	// this.bounds.height = paper.view.bounds.height;
 		// raster.scale();
-
-		// Create a Paper.js Path to draw a line into it:
-		var layer = new paper.Layer();
+		canvas.addEventListener("mouseenter", function(event){
+			console.log(event);
+			var layer = new paper.Layer();
 		var objArray = json.annotations;
 		value = json.images[0].id;
 		// console.log(objArray);
@@ -55,11 +57,24 @@
 		// console.log(obj);
 			obj = obj.bbox;
 			console.log(obj);
-		var rectangle = new paper.Rectangle(obj[0],obj[1],obj[2],obj[3]);
-		var path = new paper.Path.Rectangle(rectangle);
+		rectangle = new paper.Rectangle(obj[0],obj[1],obj[2],obj[3]);
+		path = new paper.Path.Rectangle(rectangle);
+		text = new paper.PointText(new paper.Point(200, 50));
+		text.justification = 'center';
+		text.fillColor = 'red';
+		text.content = 'The contents of the point text';
 		// Give the stroke a color
+		
+		console.log(path);
 		path.strokeColor = 'black';
-		path.selected = true;
+		path.selected = false;
+		});
+		canvas.addEventListener("mouseout", function(event) {
+			path.remove();
+			text.remove()
+			console.log("does thisasdfad")
+		});
+		// Create a Paper.js Path to draw a line into it:
 		// Draw the view now:
 	}
 
