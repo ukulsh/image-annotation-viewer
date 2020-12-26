@@ -11,40 +11,61 @@
 
 <script type="text/javascript">
 
+	var imagedata;
 	// Only executed our code once the DOM is ready.
-	$(document).ready(function(){
-        $.getJSON("data.json", function(data){
-            console.log(data); // Prints: Harry
-			window.onload = function() {
-			// Get a reference to the canvas object
-			var canvas = document.getElementById('myCanvas');
-			// Create an empty project and a view for the canvas:
-			paper.setup('myCanvas');
-			var raster = new paper.Raster({
-			source: data.images[0].flickr_url,
-			});
-			// Create a Paper.js Path to draw a line into it:
-			var layer = new paper.Layer();
-
-			var path = new paper.Path();
-			// Give the stroke a color
-			path.strokeColor = 'black';
-			var start = new paper.Point(100, 100);
-			// Move to start and draw a line from there
-			path.moveTo(start);
-			// Note that the plus operator on Point objects does not work
-			// in JavaScript. Instead, we need to call the add() function:
-			path.lineTo(start.add([ 200, -50 ]));
-			// Draw the view now:
-			}	
-        }).fail(function(){
-            console.log("An error has occurred.");
-        });
+	var json = (function () {
+    var json = null;
+    $.ajax({
+        'async': false,
+        'global': false,
+        'url': 'data.json',
+        'dataType': "json",
+        'success': function (data) {
+            json = data;
+        }
     });
-	
+    return json;
+})();
+	console.log(json);
+	console.log("2++++++++++++");
+	window.onload = function() {
+
+		// Get a reference to the canvas object
+		var canvas = document.getElementById('myCanvas');
+		// Create an empty project and a view for the canvas:
+		paper.setup('myCanvas');
+		var raster = new paper.Raster({
+		source: json.images[0].flickr_url,
+		});
+		raster.position = paper.view.center;
+    	// this.bounds.width = paper.view.bounds.width;
+    	// this.bounds.height = paper.view.bounds.height;
+		// raster.scale();
+
+		// Create a Paper.js Path to draw a line into it:
+		var layer = new paper.Layer();
+		var objArray = json.annotations;
+		value = json.images[0].id;
+		// console.log(objArray);
+		var obj = objArray.find(obj =>  {
+			// console.log(obj);
+			if (obj.image_id == 393372)
+			{console.log("++++++++");
+			return true}});
+		// console.log(obj);
+			obj = obj.bbox;
+			console.log(obj);
+		var rectangle = new paper.Rectangle(obj[0],obj[1],obj[2],obj[3]);
+		var path = new paper.Path.Rectangle(rectangle);
+		// Give the stroke a color
+		path.strokeColor = 'black';
+		path.selected = true;
+		// Draw the view now:
+	}
+
 </script>
 </head>
 <body>
-	<canvas id="myCanvas" resize></canvas>
+	<canvas id="myCanvas" height="640" width="480"></canvas>
 </body>
 </html>
