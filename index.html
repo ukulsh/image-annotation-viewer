@@ -1,86 +1,180 @@
 <!DOCTYPE html>
 <html>
-<head>
-<!-- Load the Paper.js library -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.11.4/paper-full.min.js"></script>
-<script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-      
+    <head>
+        <!-- Load the Paper.js library -->
+        <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.11.4/paper-full.min.js"
+        ></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <!-- Define inlined JavaScript -->
+        
+        <style>
+            * {
+  box-sizing: border-box;
+}
+            .container {
+                display: flex;
+                flex-flow: row wrap;
+            }
 
+            .gallery-block {
+                width: 25%;
+            }
 
-<!-- Define inlined JavaScript -->
+            #zoomedCanvas {
+                margin-top: 30px;
+            }
+        </style>
+    </head>
 
-<script type="text/javascript">
+    <body>
+        <div class="container">
+            <div class="gallery-block"></div>
+            <div class="gallery-block"></div>
+            <div class="gallery-block"></div>
+            <div class="gallery-block"></div>
+            <div class="gallery-block"></div>
+            <div class="gallery-block"></div>
+            <div class="gallery-block"></div>
+            <div class="gallery-block"></div>
+        </div>
+        <div class="img">
+            <canvas id="zoomedCanvas" height="640" width="480" />
+        </div>
+        <script type="text/javascript">
+            console.log("hello");
+            var imagedata;
+            // Only executed our code once the DOM is ready.
+            var json = (function () {
+                var json = null;
+                $.ajax({
+                    async: false,
+                    global: false,
+                    url: "data.json",
+                    dataType: "json",
+                    success: function (data) {
+                        json = data;
+                    },
+                });
+                return json;
+            })();
+            // console.log(json);
+            // console.log("2++++++++++++");
+            window.onload = function () {
+                // Get a reference to the canvas object
+                var path,
+                    rectangle,
+                    text = 0;
+                var blockshtml = document.getElementsByClassName(
+                    "gallery-block"
+                );
+                // console.log(blockshtml);
+                var blocks = Array.prototype.slice.call(blockshtml);
+                let zoomedCanvas = document.querySelector('#zoomedCanvas');
 
-	var imagedata;
-	// Only executed our code once the DOM is ready.
-	var json = (function () {
-    var json = null;
-    $.ajax({
-        'async': false,
-        'global': false,
-        'url': 'data.json',
-        'dataType': "json",
-        'success': function (data) {
-            json = data;
-        }
-    });
-    return json;
-})();
-	// console.log(json);
-	// console.log("2++++++++++++");
-	window.onload = function() {
-		// Get a reference to the canvas object
-		var path,rectangle,text = 0;
-		var canvas = document.getElementById('myCanvas');
-		// Create an empty project and a view for the canvas:
-		
-		paper.setup('myCanvas');
-		
-		var raster = new paper.Raster({
-		source: json.images[0].flickr_url,
-		});
-		raster.position = paper.view.center;
-    	// this.bounds.width = paper.view.bounds.width;
-    	// this.bounds.height = paper.view.bounds.height;
-		// raster.scale();
-		canvas.addEventListener("mouseenter", function(event){
-			console.log(event);
-			var layer = new paper.Layer();
-		var objArray = json.annotations;
-		value = json.images[0].id;
-		// console.log(objArray);
-		var obj = objArray.find(obj =>  {
-			// console.log(obj);
-			if (obj.image_id == 393372)
-			{console.log("++++++++");
-			return true}});
-		// console.log(obj);
-			obj = obj.bbox;
-			console.log(obj);
-		rectangle = new paper.Rectangle(obj[0],obj[1],obj[2],obj[3]);
-		path = new paper.Path.Rectangle(rectangle);
-		text = new paper.PointText(new paper.Point(200, 50));
-		text.justification = 'center';
-		text.fillColor = 'red';
-		text.content = 'The contents of the point text';
-		// Give the stroke a color
-		
-		console.log(path);
-		path.strokeColor = 'black';
-		path.selected = false;
-		});
-		canvas.addEventListener("mouseout", function(event) {
-			path.remove();
-			text.remove()
-			console.log("does thisasdfad")
-		});
-		// Create a Paper.js Path to draw a line into it:
-		// Draw the view now:
-	}
+                blocks.forEach((block, idx) => {
+                    let canvas = document.createElement("CANVAS");
+                    // console.log(`block${idx}`);
+                    canvas.id = `block${idx}`;
+                    canvas.height = 160;
+                    canvas.width = 120;
+                    canvas.setAttribute('data-url', json.images[0].flickr_url)
+                    block.appendChild(canvas);
 
-</script>
-</head>
-<body>
-	<canvas id="myCanvas" height="640" width="480"></canvas>
-</body>
+                    var papers = []
+                    papers[idx] = new paper.PaperScope();
+                    papers[idx].setup(`block${idx}`);
+
+                    var raster = new paper.Raster({
+                        source: json.images[0].flickr_url,
+                    });
+                    raster.position = paper.view.center;
+                    // this.bounds.width = paper.view.bounds.width;
+                    // this.bounds.height = paper.view.bounds.height;
+                    raster.scale(.4);
+                    
+                    
+                    // paper = mypapers[0];
+                    // var circle1 = new paper.Path.Circle(30, 30, 20);
+                    // circle1.style = {
+                    //  fillColor: new paper.Color(1, .5, .5),
+                    //  strokeColor: "black"
+                    // };
+
+                    // paper = mypapers[1];
+                    // var circle2 = new paper.Path.Circle(60, 60, 20);
+                    // circle2.style = {
+                    //  fillColor: new paper.Color(.5, .5, 1),
+                    //  strokeColor: "black"
+                    // };
+
+                    // mypapers[0].view.draw();
+                    // mypapers[1].view.draw();
+
+                    
+
+                    canvas.addEventListener("click", function(event){
+                        
+                        let context = zoomedCanvas.getContext('2d')
+                        context.clearRect(0, 0, zoomedCanvas.width, zoomedCanvas.height);
+
+                        // let paper = new paper.PaperScope();
+                        paper.setup(`zoomedCanvas`);
+
+                        var raster = new paper.Raster({
+                            source: event.target.getAttribute('data-url'),
+                        });
+                        raster.position = paper.view.center;
+
+                        
+                    })
+                });
+
+                zoomedCanvas.addEventListener("mouseenter", function (event) {
+                        
+                        // let papers = new paper.PaperScope();
+                        // papers.setup(`zoomedCanvas`);
+                        var layer = new paper.Layer();
+                        var objArray = json.annotations;
+                        value = json.images[0].id;
+                        // console.log(objArray);
+                        var obj = objArray.find((obj) => {
+                            // console.log(obj);
+                            if (obj.image_id == 393372) {
+                                // console.log("++++++++");
+                                return true;
+                            }
+                        });
+                        console.log(obj);
+                        obj = obj.bbox;
+                        console.log(obj);
+                        // paper = papers[idx];
+                        rectangle = new paper.Rectangle(
+                            obj[0],
+                            obj[1],
+                            obj[2],
+                            obj[3]
+                        );
+                        path = new paper.Path.Rectangle(rectangle);
+                        text = new paper.PointText(new paper.Point(200, 50));
+                        text.justification = "center";
+                        text.fillColor = "red";
+                        text.content = "The contents of the point text";
+                        // Give the stroke a color
+
+                        // console.log(path);
+                        path.strokeColor = "black";
+                        path.selected = false;
+                    });
+                    zoomedCanvas.addEventListener("mouseout", function (event) {
+                        path.remove();
+                        text.remove();
+                        // console.log("does thisasdfad");
+                    });
+                // var canvas = document.getElementById('myCanvas');
+                // Create an empty project and a view for the canvas:
+            };
+        </script>
+    </body>
 </html>
